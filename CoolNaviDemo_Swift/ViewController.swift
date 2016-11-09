@@ -17,19 +17,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.hidden = true
-        UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent
+        self.navigationController?.navigationBar.isHidden = true
+        UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
         
         tableView = UITableView()
-        tableView!.backgroundColor = UIColor.clearColor()
+        tableView!.backgroundColor = UIColor.clear
         tableView!.delegate = self
         tableView!.dataSource = self
-        tableView?.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView?.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+        tableView?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView?.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height);
         self.view.addSubview(tableView!)
         
         headerView = CoolNavi()
-        headerView!.myInit(CGRectMake(0,0,self.view.frame.size.width,kWindowHeight), backImageName: "background", headerImageURL: "http://d.hiphotos.baidu.com/image/pic/item/0ff41bd5ad6eddc4f263b0fc3adbb6fd52663334.jpg", title: "妹子!", subTitle: "个性签名, 啦啦啦!")
+        headerView!.myInit(CGRect(x: 0,y: 0,width: self.view.frame.size.width,height: kWindowHeight), backImageName: "background", headerImageURL: "http://d.hiphotos.baidu.com/image/pic/item/0ff41bd5ad6eddc4f263b0fc3adbb6fd52663334.jpg", title: "妹子!", subTitle: "个性签名, 啦啦啦!")
         headerView?.scrollView = tableView
         headerView?.initWithClosure({ () -> Void in
             print("headerImageAction")
@@ -38,23 +38,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
       
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 40
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as UITableViewCell
         cell.textLabel!.text = String(format: "%i", indexPath.row + 1)
         return cell
         
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44
     }
     

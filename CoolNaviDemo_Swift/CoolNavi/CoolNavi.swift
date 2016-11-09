@@ -8,6 +8,30 @@
 
 import UIKit
 import Kingfisher
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 typealias imgActionCallBackFun = ()->Void
 
@@ -15,7 +39,7 @@ class CoolNavi: UIView {
     
     var scrollView: UIScrollView?
     var myClosure:imgActionCallBackFun?
-    func initWithClosure(closure:imgActionCallBackFun?){
+    func initWithClosure(_ closure:imgActionCallBackFun?){
         myClosure = closure
     }
 
@@ -28,35 +52,35 @@ class CoolNavi: UIView {
     
 
     
-    func myInit(frame: CGRect, backImageName: String, headerImageURL: String, title: String, subTitle: String){
+    func myInit(_ frame: CGRect, backImageName: String, headerImageURL: String, title: String, subTitle: String){
         
         self.frame = frame
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
         self.clipsToBounds = true
         
-        backImageView = UIImageView(frame: CGRectMake(0, -0.5*frame.size.height, frame.size.width, frame.size.height*1.5))
+        backImageView = UIImageView(frame: CGRect(x: 0, y: -0.5*frame.size.height, width: frame.size.width, height: frame.size.height*1.5))
         backImageView?.image = UIImage.init(named: backImageName)
-        backImageView?.contentMode = UIViewContentMode.ScaleAspectFill
+        backImageView?.contentMode = UIViewContentMode.scaleAspectFill
     
-        headerImageView = UIImageView(frame:CGRectMake(frame.size.width * 0.5 - 70*0.5, 0.27*frame.size.height, 70, 70))
-        headerImageView?.kf_setImageWithURL(NSURL(string: headerImageURL)!)
+        headerImageView = UIImageView(frame:CGRect(x: frame.size.width * 0.5 - 70*0.5, y: 0.27*frame.size.height, width: 70, height: 70))
+        headerImageView?.kf.setImage(with: URL(string: headerImageURL)!)
         headerImageView?.layer.masksToBounds = true
         headerImageView?.layer.cornerRadius = (headerImageView?.frame.size.width)!/2.0
-        headerImageView?.userInteractionEnabled = true
-        tap = UITapGestureRecognizer(target: self, action: Selector("tapAction:"))
+        headerImageView?.isUserInteractionEnabled = true
+        tap = UITapGestureRecognizer(target: self, action: #selector(CoolNavi.tapAction(_:)))
         headerImageView?.addGestureRecognizer(tap!)
         
-        titleLabel = UILabel(frame: CGRectMake(0, 0.6 * frame.size.height, frame.size.width, frame.size.height * 0.2))
-        titleLabel?.textAlignment = NSTextAlignment.Center
-        titleLabel?.font = UIFont.systemFontOfSize(14.0)
+        titleLabel = UILabel(frame: CGRect(x: 0, y: 0.6 * frame.size.height, width: frame.size.width, height: frame.size.height * 0.2))
+        titleLabel?.textAlignment = NSTextAlignment.center
+        titleLabel?.font = UIFont.systemFont(ofSize: 14.0)
         titleLabel?.text = title
-        titleLabel?.textColor = UIColor.whiteColor()
+        titleLabel?.textColor = UIColor.white
         
-        subTitleLabel = UILabel(frame: CGRectMake(0, 0.75 * frame.size.height, frame.size.width, frame.size.height * 0.1))
-        subTitleLabel?.textAlignment = NSTextAlignment.Center
-        subTitleLabel?.font = UIFont.systemFontOfSize(12)
+        subTitleLabel = UILabel(frame: CGRect(x: 0, y: 0.75 * frame.size.height, width: frame.size.width, height: frame.size.height * 0.1))
+        subTitleLabel?.textAlignment = NSTextAlignment.center
+        subTitleLabel?.font = UIFont.systemFont(ofSize: 12)
         subTitleLabel?.text = subTitle
-        subTitleLabel?.textColor = UIColor.whiteColor()
+        subTitleLabel?.textColor = UIColor.white
         
         self.addSubview(backImageView!)
         self.addSubview(headerImageView!)
@@ -65,15 +89,15 @@ class CoolNavi: UIView {
 
     }
     
-    override func willMoveToSuperview(newSuperview: UIView?) {
-        self.scrollView?.addObserver(self, forKeyPath: "contentOffset", options: NSKeyValueObservingOptions.New, context: nil)
+    override func willMove(toSuperview newSuperview: UIView?) {
+        self.scrollView?.addObserver(self, forKeyPath: "contentOffset", options: NSKeyValueObservingOptions.new, context: nil)
         self.scrollView?.contentInset = UIEdgeInsetsMake(self.frame.size.height, 0, 0, 0)
         self.scrollView?.scrollIndicatorInsets = (self.scrollView?.contentInset)!;
     }
     
     var newOffset: CGPoint?
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        newOffset = change!["new"]?.CGPointValue
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        newOffset = (change![NSKeyValueChangeKey.newKey] as AnyObject).cgPointValue
         self.updateSubViewsWithScrollOffset(newOffset!)
     }
     
@@ -87,15 +111,15 @@ class CoolNavi: UIView {
     var t: CGAffineTransform?
     var myNewOffset: CGPoint?
     
-    func updateSubViewsWithScrollOffset(theNewOffset: CGPoint){
+    func updateSubViewsWithScrollOffset(_ theNewOffset: CGPoint){
         destinaOffset = -64
         startChangeOffset = -(self.scrollView?.contentInset.top)!
         if(theNewOffset.y<startChangeOffset){
-            myNewOffset = CGPointMake(theNewOffset.x, startChangeOffset!)
+            myNewOffset = CGPoint(x: theNewOffset.x, y: startChangeOffset!)
         } else if (theNewOffset.y>destinaOffset){
-            myNewOffset = CGPointMake(theNewOffset.x, destinaOffset!)
+            myNewOffset = CGPoint(x: theNewOffset.x, y: destinaOffset!)
         } else {
-            myNewOffset = CGPointMake(theNewOffset.x, theNewOffset.y)
+            myNewOffset = CGPoint(x: theNewOffset.x, y: theNewOffset.y)
         }
         subviewOffset = self.frame.size.height - 40;
         newY = -myNewOffset!.y-(self.scrollView?.contentInset.top)!
@@ -109,13 +133,13 @@ class CoolNavi: UIView {
         self.frame.origin.y = newY!
         backImageView?.frame.origin.y = -0.5*self.frame.size.height + (1.5*self.frame.size.height - 64)*(1-myAlpha!)
 
-        t = CGAffineTransformMakeTranslation(0,(subviewOffset!-0.35*self.frame.size.height)*(1-myAlpha!))
-        headerImageView!.transform = CGAffineTransformScale(t!,imageReduce!,imageReduce!)
-        self.titleLabel?.frame = CGRectMake(0, 0.6*self.frame.size.height+(subviewOffset!-0.45*self.frame.size.height)*(1-myAlpha!), self.frame.size.width, self.frame.size.height*0.2)
-        self.subTitleLabel!.frame = CGRectMake(0, 0.75*self.frame.size.height+(subviewOffset!-0.45*self.frame.size.height)*(1-myAlpha!), self.frame.size.width, self.frame.size.height*0.1);
+        t = CGAffineTransform(translationX: 0,y: (subviewOffset!-0.35*self.frame.size.height)*(1-myAlpha!))
+        headerImageView!.transform = t!.scaledBy(x: imageReduce!,y: imageReduce!)
+        self.titleLabel?.frame = CGRect(x: 0, y: 0.6*self.frame.size.height+(subviewOffset!-0.45*self.frame.size.height)*(1-myAlpha!), width: self.frame.size.width, height: self.frame.size.height*0.2)
+        self.subTitleLabel!.frame = CGRect(x: 0, y: 0.75*self.frame.size.height+(subviewOffset!-0.45*self.frame.size.height)*(1-myAlpha!), width: self.frame.size.width, height: self.frame.size.height*0.1);
     }
     
-    func tapAction(sender: AnyObject){
+    func tapAction(_ sender: AnyObject){
         if (myClosure != nil){
             myClosure!()
         }
